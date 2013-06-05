@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Import old menu to new</title>
+    <link href="style.css" type="text/css" rel="stylesheet" />
+</head>
+<body>
+<h1>Import Menu</h1>
+<div class="smallField">
+    <label for="index">Start Index:</label>
+    <input id="index" type="number" step="1" value="1" />
+</div>
+<label for="import">Paste Dump Here:</label>
+<textarea id="import"></textarea>
+<button id="generate">Generate</button>
+<pre id="insert" class="results"></pre>
+<script type="text/javascript" src="build/TreeNode.min.js"></script>
+<script type="text/javascript" src="build/TreeNode.Decorator.min.js"></script>
+<script type="text/javascript" src="build/TreeNode.ImportTool.min.js"></script>
+<script type="text/javascript" src="script.js"></script>
+</body>
+</html>
