@@ -14,6 +14,7 @@ module.exports = function(grunt) {
                     'build/<%= pkg.name %>.min.js': ['src/TreeNode.js'],
                     'build/<%= pkg.name %>.ImportTool.min.js': [
                         'src/ImportTool/TreeNode.ImportFromSelfRef.js',
+                        "src/ImportTool/TreeNode.ImportFromLftRgt.js",
                         'src/ImportTool/TreeNode.ExportInserts.js'
                     ],
                     'build/<%= pkg.name %>.Decorator.min.js': [
@@ -35,6 +36,7 @@ module.exports = function(grunt) {
                 'src/Decorator/TreeNode.Decorate.js',
                 'src/Decorator/TreeNode.LftRgt.js',
                 'src/ImportTool/TreeNode.ImportFromSelfRef.js',
+                "src/ImportTool/TreeNode.ImportFromLftRgt.js",
                 'src/ImportTool/TreeNode.ExportInserts.js'
             ],
             options: {

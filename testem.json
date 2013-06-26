@@ -1,0 +1,12 @@
+{
+    "framework": "jasmine",
+    "src_files": [
+        "src/TreeNode.js",
+        "src/Decorator/TreeNode.Decorate.js",
+        "src/Decorator/TreeNode.LftRgt.js",
+        "src/ImportTool/TreeNode.ImportFromSelfRef.js",
+        "src/ImportTool/TreeNode.ExportInserts.js",
+        "src/ImportTool/TreeNode.ImportFromLftRgt.js",
+        "src/**/*.spec.js"
+    ]
+}
