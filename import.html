@@ -7,15 +7,19 @@
 </head>
 <body>
 <h1>Import Menu</h1>
+<div id="menu" class="menu"></div>
+<section id="main">
 <div class="smallField">
     <label for="index">Start Index:</label>
     <input id="index" type="number" step="1" value="1" />
 </div>
 <label for="import">Paste Dump Here:</label>
 <textarea id="import"></textarea>
-<button id="build">Build</button>
+<button id="buildLftRgt">Import - LftRgt</button>
+<button id="buildSelfRef">Import - Self Ref</button>
 <button id="generate">Generate</button>
 <pre id="insert" class="results"></pre>
+</section>
 <script type="text/javascript" src="build/TreeNode.min.js"></script>
 <script type="text/javascript" src="build/TreeNode.Decorator.min.js"></script>
 <script type="text/javascript" src="build/TreeNode.ImportTool.min.js"></script>

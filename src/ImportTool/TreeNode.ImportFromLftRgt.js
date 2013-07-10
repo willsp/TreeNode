@@ -17,6 +17,7 @@
                     text: record[1],
                     lft: record[2],
                     rgt: record[3],
+                    url: (record[5] === "NULL") ? null : record[5],
                     page_id: (record[4] === "NULL") ? null : record[4]
                 };
 

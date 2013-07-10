@@ -21,6 +21,10 @@ body {
     padding: 1em;
 }
 
+section {
+    width: 50%;
+}
+
 label {
     font-size: 1.2em;
 }
@@ -62,3 +66,30 @@ button {
     font-weight: bold;
 }
 
+.menu {
+    background: #AAAAAA;
+    color: #111111;
+    width: 50%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    overflow: auto;
+    text-align: left;
+}
+
+.menu button {
+    padding: 0;
+    font-size: .8em;
+    margin: 0;
+    font-weight: normal;
+}
+
+.menu div {
+    display: inline-block;
+}
+
+.menu > ul, .menu > ul > li {
+    padding-left: 0;
+    list-style: none;
+}

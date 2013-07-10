@@ -14,7 +14,7 @@
         }
 
         var context = options.context,
-            statementPrefix = 'INSERT INTO `nav` (`name`, `lft`, `rgt`, `page_id`)\n' +
+            statementPrefix = 'INSERT INTO `nav` (`name`, `lft`, `rgt`, `page_id`, `url`)\n' +
                      'VALUES',
             statementPostfix = ';',
             statement;
@@ -47,7 +47,8 @@
             '\'' + tree.Payload().text + '\'',
             tree.Lft,
             tree.Rgt,
-            tree.Payload().page_id || 'NULL'
+            tree.Payload().page_id || 'NULL',
+            tree.Payload().url || 'NULL'
         ].join(',') + rowPostfix);
 
         for (var i = 0, max = tree.Children().length; i < max; i++) {

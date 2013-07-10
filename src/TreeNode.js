@@ -39,37 +39,50 @@
         }
     };
 
-    TreeNode.prototype.Add = function(payload) {
-            var child;
+    TreeNode.prototype.Add = function(payload, index) {
+        var child;
 
-            if (!payload) {
-                return;
-            }
+        if (!payload) {
+            return;
+        }
 
-            if (payload.constructor.name !== "TreeNode") {
-                child = new TreeNode({
-                    parent: this,
-                    payload: payload,
-                });
-            } else {
-                child = payload;
-                child._parent = this; // This kind of breaks my rules...
-            }
+        if (payload.constructor.name !== this.constructor.name) {
+            child = new TreeNode({
+                parent: this,
+                payload: payload
+            });
+        } else {
+            child = payload;
+            child._parent = this; // This kind of breaks my rules...
+        }
 
+        if (index > -1 && index < this._children.length) {
+            this._children.splice(index, 0, child);
+        } else if (index === undefined || index === this._children.length) {
             this._children.push(child);
+        }
 
-            return child;
+        return child;
     };
 
+    TreeNode.prototype.InsertBefore = function(payload, reference) {
+        var refIndex = this._children.indexOf(reference);
+
+        if (refIndex > -1) {
+            return this.Add(payload, refIndex);
+        }
+    };
+
+
     TreeNode.prototype.Remove = function(target) {
-            var removed,
-                targetIndex = this.Children().indexOf(target);
+        var removed,
+            targetIndex = this.Children().indexOf(target);
 
-            if (targetIndex > -1) {
-                removed = this.Children().splice(targetIndex, 1);
-            }
+        if (targetIndex > -1) {
+            removed = this.Children().splice(targetIndex, 1);
+        }
 
-            return (removed && removed[0]) ? removed[0] : undefined;
+        return (removed && removed[0]) ? removed[0] : undefined;
     };
 
     // Factory...
