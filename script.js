@@ -1,11 +1,67 @@
-/*global TreeNode*/
+/*jshint plusplus: false*/
+/*global TreeNode, confirm*/
+
 (function() {
     "use strict";
 
     var tree,
+        dragging,
+        draggedItem,
         deleted = [],
         added = [],
         updated = [];
+
+    function addTargetListeners(target) {
+        target.addEventListener('dragenter', function(e) {
+            e.stopPropagation();
+            if (this.classList.contains('target')) {
+                this.classList.add('over');
+            }
+        }, false);
+        target.addEventListener('dragover', function(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+
+            e.dataTransfer.dropEffect = 'move';
+
+            return false;
+        }, false);
+        target.addEventListener('dragleave', function(e) {
+            this.classList.remove('over');
+        }, false);
+        target.addEventListener('drop', function(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+
+            var parent = this.parentNode;
+            var children = parent.childNodes;
+            var targets = document.querySelectorAll('.target');
+            var itemParent = draggedItem.Parent();
+            var item = itemParent.Remove(draggedItem);
+            var newIndex;
+
+            this.parentNode.insertBefore(dragging, this);
+            this.parentNode.classList.remove('draggingCont');
+            dragging.classList.remove('dragging');
+
+            [].forEach.call(targets, function(targ) {
+                targ.parentNode.removeChild(targ);
+            });
+
+            for (var i = children.length - 1; i >= 0; i--) {
+                if (children[i] === dragging) {
+                    newIndex = i;
+                    break;
+                }
+            }
+
+            itemParent.Add(item, newIndex);
+
+            return false;
+        }, false);
+    }
 
     function addItem(context) {
         var newItem = context.item.Add({
@@ -57,22 +113,6 @@
         }
     }
 
-    function move(context) {
-        var parent = context.item.Parent(),
-            index = parent.Children().indexOf(context.item),
-            newIndex = index + context.move,
-            childWrapper = context.wrapper.parentNode,
-            parentUI = childWrapper.parentNode;
-
-        if (newIndex >= 0 && newIndex < parent.Children().length) {
-            context.item = parent.Remove(context.item);
-            parent.Add(context.item, newIndex);
-
-            parentUI.removeChild(childWrapper);
-            parentUI.appendChild(bindChildren(parent.Children()));
-        }
-    }
-
     function saveItem(context) {
         var newPayload = {
             text: context.text.value
@@ -90,54 +130,80 @@
         }
     }
 
-    function bindChildren(children) {
+    function bindChildren(children, level) {
         var wrapper;
+        level++;
 
         for (var i = 0, max = children.length; i < max; i++) {
             if (!wrapper) {
                 wrapper = document.createElement('ul');
             }
 
-            wrapper.appendChild(addNode(children[i]));
+            wrapper.appendChild(addNode(children[i], level));
         }
 
         return wrapper;
     }
 
-    function addNode(item) {
-        var text = document.createElement('input'),
+    function addNode(item, level) {
+        var view = document.createElement('span'),
+            text = document.createElement('input'),
             url = document.createElement('input'),
             inputs = document.createElement('div'),
             add = document.createElement('button'),
             remove = document.createElement('button'),
-            up = document.createElement('button'),
-            down = document.createElement('button'),
             save = document.createElement('button'),
+            cancel = document.createElement('button'),
+            open = document.createElement('button'),
             buttons = document.createElement('div'),
             wrapper = document.createElement('li'),
-            childWrapper;
+            childWrapper,
+            level = level || 0;
+
+        // Set up the elements inside each item
+        view.textContent = item.Payload().text;
+        view.classList.add('view');
 
         text.value = item.Payload().text;
-        text.setAttribute('class', 'text');
+        text.classList.add('text');
 
         url.value = item.Payload().url || item.Payload().page_id;
-        url.setAttribute('class', 'url');
+        url.classList.add('url');
 
         add.textContent = '+';
-        add.setAttribute('class', 'add');
-
         remove.textContent = '-';
-        remove.setAttribute('class', 'remove');
-
-        up.textContent = 'u';
-        up.setAttribute('class', 'up');
-
-        down.textContent = 'd';
-        down.setAttribute('class', 'down');
-
         save.textContent = 'save';
-        save.setAttribute('class', 'save');
- 
+        cancel.textContent = 'cancel';
+
+        inputs.classList.add('inputs');
+        inputs.appendChild(text);
+        inputs.appendChild(url);
+
+        buttons.classList.add('buttons');
+        buttons.appendChild(add);
+        buttons.appendChild(remove);
+        buttons.appendChild(cancel);
+        buttons.appendChild(save);
+
+        // Set up the item and add elements
+        if (level > 1) {
+            wrapper.setAttribute('draggable', 'true');
+        }
+        wrapper.classList.add('item', 'level' + level);
+        wrapper.appendChild(view);
+        wrapper.appendChild(inputs);
+        wrapper.appendChild(buttons);
+
+        // Go get the children
+        childWrapper = bindChildren(item.Children(), level);
+        if (childWrapper) {
+            url.setAttribute('disabled', 'disabled');
+            open.classList.add('open');
+            wrapper.appendChild(open);
+            wrapper.appendChild(childWrapper);
+        }
+
+        // Add event listeners
         add.addEventListener('click', function() {
             addItem({
                 item: item,
@@ -151,47 +217,75 @@
                 wrapper: wrapper
             });
         }, false);
-        up.addEventListener('click', function() {
-            move({
-                item: item,
-                wrapper: wrapper,
-                move: -1
-            });
-        }, false);
-        down.addEventListener('click', function() {
-            move({
-                item: item,
-                wrapper: wrapper,
-                move: 1
-            });
-        }, false);
         save.addEventListener('click', function() {
             saveItem({
                 item: item,
                 text: text,
                 url: url
             });
+
+            view.textContent = text.value;
+            wrapper.classList.remove('edit');
+        }, false);
+        cancel.addEventListener('click', function() {
+            text.value = item.Payload().text;
+            url.value = item.Payload().url || item.Payload().page_id;
+            wrapper.classList.remove('edit');
+        }, false);
+        open.addEventListener('click', function() {
+            wrapper.classList.toggle('childrenVisible')
+        }, false);
+        wrapper.addEventListener('dblclick', function(e) {
+            e.stopPropagation();
+            if (!this.classList.contains('edit')) {
+                this.classList.add('edit');
+            }
         }, false);
 
-        inputs.setAttribute('class', 'inputs');
-        inputs.appendChild(text);
-        inputs.appendChild(url);
+        // Drag events
+        wrapper.addEventListener('dragstart', function(e) {
+            e.stopPropagation();
+            var target = document.createElement('li');
+            var parent = this.parentNode;
+            var children = parent.childNodes;
+            var curr;
 
-        buttons.setAttribute('class', 'buttons');
-        buttons.appendChild(add);
-        buttons.appendChild(remove);
-        buttons.appendChild(up);
-        buttons.appendChild(down);
-        buttons.appendChild(save);
+            this.classList.add('dragging');
+            parent.classList.add('draggingCont');
+            target.classList.add('target');
 
-        wrapper.setAttribute('class', 'item');
-        wrapper.appendChild(inputs);
-        wrapper.appendChild(buttons);
+            for (var i = children.length - 1; i >= 0; i--) {
+                if ((children[i] && children[i] !== this) &&
+                    !(children[i - 1] && children[i - 1] === this)) {
+                    curr = parent.insertBefore(target.cloneNode(), children[i]);
+                    addTargetListeners(curr);
+                }
+            }
+            
+            curr = this.parentNode.appendChild(target.cloneNode());
+            addTargetListeners(curr);
 
-        childWrapper = bindChildren(item.Children());
-        if (childWrapper) {
-            wrapper.appendChild(childWrapper);
-        }
+            dragging = this;
+            draggedItem = item;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+        }, false);
+        wrapper.addEventListener('dragend', function(e) {
+            var targets = document.querySelectorAll('.target');
+            [].forEach.call(targets, function(target) {
+                if (!target.classList.contains('over')) {
+                    target.parentNode.removeChild(target);
+                }
+            });
+
+            var overs = document.querySelectorAll('.over');
+            [].forEach.call(overs, function(over) {
+                over.classList.remove('over');
+            });
+
+            this.classList.remove('dragging');
+            this.parentNode.classList.remove('draggingCont');
+        }, false);
 
         return wrapper;
     }

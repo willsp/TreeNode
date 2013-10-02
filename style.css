@@ -1,3 +1,4 @@
+/*csslint universal-selector: false, box-sizing: false*/
 * {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -79,9 +80,9 @@ button {
 }
 
 .menu button {
-    padding: 0;
+    padding: .5rem;
     font-size: .8em;
-    margin: 0;
+    margin: 0 0 0 .5rem;
     font-weight: normal;
 }
 
@@ -89,7 +90,93 @@ button {
     display: inline-block;
 }
 
-.menu > ul, .menu > ul > li {
-    padding-left: 0;
+ul, li {
+    border-radius: 4px;
+    padding: 0;
     list-style: none;
 }
+
+ul {
+    padding: .5em;
+    background: #999999;
+    margin: 0;
+}
+
+li {
+    background: #dddddd;
+    border: 1px #666666 solid;
+    font-size: 1.2rem;
+    line-height: 3rem;
+    margin: 0 0 .5em;
+    padding: 0 .6em;
+}
+
+li:last-child {
+    margin: 0;
+}
+
+li .buttons,
+li .inputs {
+    display: none;
+}
+
+.edit > .buttons,
+.edit > .inputs {
+    display: inline-block;
+}
+
+.edit > .view {
+    display: none;
+}
+
+li li li {
+    border-color: #ffffff;
+    cursor: move;
+    list-style: square inside;
+}
+
+li li ul {
+    display: none;
+}
+
+.childrenVisible > ul {
+    display: block;
+}
+
+.open:before {
+    content: "show";
+}
+
+.childrenVisible > .open:before {
+    content: "hide";
+}
+
+.draggingCont li {
+    margin: 0;
+}
+
+.draggingCont {
+    padding: 0 .5em;
+}
+
+li.dragging {
+    opacity: 0.4;
+    margin: 0.5em 0;
+}
+
+.target {
+    background: transparent;
+    border: none;
+    height: .5em;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    transition: margin 1s ease-in-out;
+}
+
+.target.over {
+    border: 2px dashed #ffffff;
+    height: 3em;
+    margin: .5em 0;
+}
+

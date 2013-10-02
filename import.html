@@ -1,24 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Import old menu to new</title>
-    <link href="style.css" type="text/css" rel="stylesheet" />
+<meta charset="UTF-8">
+<title>Import old menu to new</title>
+<link href="style.css" type="text/css" rel="stylesheet" />
 </head>
 <body>
 <h1>Import Menu</h1>
 <div id="menu" class="menu"></div>
 <section id="main">
-<div class="smallField">
-    <label for="index">Start Index:</label>
-    <input id="index" type="number" step="1" value="1" />
-</div>
-<label for="import">Paste Dump Here:</label>
-<textarea id="import"></textarea>
-<button id="buildLftRgt">Import - LftRgt</button>
-<button id="buildSelfRef">Import - Self Ref</button>
-<button id="generate">Generate</button>
-<pre id="insert" class="results"></pre>
+    <div class="smallField">
+        <label for="index">Start Index:</label>
+        <input id="index" type="number" step="1" value="1" />
+    </div>
+    <div class="smallField">
+        <input id="useUpdate" type="checkbox" selected="selected" />
+        <label for=useUpdate">Use Update (instead of insert)</label>
+    </div>
+    <label for="import">Paste Dump Here:</label>
+    <textarea id="import"></textarea>
+    <button id="buildLftRgt">Import - LftRgt</button>
+    <button id="buildSelfRef">Import - Self Ref</button>
+    <button id="generate">Generate</button>
+    <pre id="insert" class="results"></pre>
 </section>
 <script type="text/javascript" src="build/TreeNode.min.js"></script>
 <script type="text/javascript" src="build/TreeNode.Decorator.min.js"></script>
