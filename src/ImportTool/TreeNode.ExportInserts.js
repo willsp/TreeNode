@@ -1,5 +1,5 @@
 (function(TreeNode) {
-    "use strict";
+    'use strict';
 
     TreeNode.prototype.ExportInserts = function(options) {
         options = options || {};
@@ -28,7 +28,7 @@
         };
 
         if (context.Lft === undefined) {
-            context.Decorate("LftRgt");
+            context.Decorate('LftRgt');
         }
 
         this.rows = [];

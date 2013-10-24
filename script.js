@@ -1,4 +1,4 @@
-/*jshint plusplus: false*/
+/*jshint quotmark: false, plusplus: false*/
 /*global TreeNode, confirm*/
 
 (function() {
@@ -27,7 +27,7 @@
 
             return false;
         }, false);
-        target.addEventListener('dragleave', function(e) {
+        target.addEventListener('dragleave', function() {
             this.classList.remove('over');
         }, false);
         target.addEventListener('drop', function(e) {
@@ -63,89 +63,98 @@
         }, false);
     }
 
+    function updatedItem(item) {
+        if (added.indexOf(item) < 0 && updated.indexOf(item) < 0) {
+            updated.push(item);
+        }
+
+    }
+
+    function setLink(item, link) {
+        if (/^\d+$/.test(link)) {
+            item.Payload().page_id = link;
+        } else {
+            item.Payload().url = link || null;
+        }
+    }
+
     function addItem(context) {
+        var hasChildren = context.item.Children().length > 0;
         var newItem = context.item.Add({
                 text: null,
                 page_id: null,
                 url: null
-            }, 0),
-            childWrapper = context.wrapper.parentNode,
-            parentUI = childWrapper.parentNode;
+            }, 0);
+        var childWrapper = context.childWrapper;
+        var myNode = addNode(newItem);
 
-        if (context.childWrapper) {
-            context.wrapper.removeChild(context.childWrapper);
-            context.wrapper.appendChild(bindChildren(context.item.Children()));
-        } else {
-            parentUI.removeChild(childWrapper);
-            parentUI.appendChild(bindChildren(context.item.Parent().Children()));
+        childWrapper.insertBefore(myNode, childWrapper.firstChild);
+
+        if (!hasChildren) {
+            context.wrapper.insertBefore(context.openButton, context.view);
+            context.item.Payload().url = null;
+            context.item.Payload().page_id = null;
+            context.urlBox.disabled = true;
+            updatedItem(context.item);
         }
+
+        if (!context.wrapper.classList.contains('childrenVisible')) {
+            context.wrapper.classList.add('childrenVisible');
+        }
+
+        myNode.classList.add('edit');
 
         added.push(newItem);
     }
 
     function removeItem(context) {
-        var parent = context.item.Parent(),
-            childWrapper = context.wrapper.parentNode,
-            parentUI = childWrapper.parentNode,
-            itemname = (context.item.Payload()) ? context.item.Payload().text : "null",
-            children, addedIndex, updatedIndex;
+        var parent = context.item.Parent();
+        var parentCont = context.wrapper.parentNode;
+        var parentUI = parentCont.parentNode;
+        var itemname = (context.item.Payload()) ? context.item.Payload().text : "null";
+        var addedIndex = added.indexOf(context.item);
+        var updatedIndex = updated.indexOf(context.item);
 
-        if (confirm("Deleting " + itemname + ". Are you sure?")) {
-            addedIndex = added.indexOf(context.item);
+        if (context.item.Children().length === 0 && confirm("Deleting " + itemname + ". Are you sure?")) {
             if (addedIndex > -1) {
                 added.splice(addedIndex, 1);
-            }
+            } else {
+                if (updatedIndex > -1) {
+                    updated.splice(updatedIndex, 1);
+                }
 
-            updatedIndex = updated.indexOf(context.item);
-            if (updatedIndex > -1) {
-                updated.splice(updatedIndex, 1);
+                deleted.push(context.item);
             }
-
-            deleted.push(context.item);
             
             parent.Remove(context.item);
 
-            parentUI.removeChild(childWrapper);
-            children = bindChildren(parent.Children());
-            if (children) {
-                parentUI.appendChild(children);
+            parentCont.removeChild(context.wrapper);
+
+            if (!parentCont.hasChildNodes()) {
+                parentUI.removeChild(parentUI.querySelector('.open'));
+                parentUI.querySelector('.url').removeAttribute('disabled');
+                setLink(parent, parentUI.querySelector('.url').value);
+                parentUI.classList.remove('childrenVisible');
+                updatedItem(parent);
             }
         }
     }
 
     function saveItem(context) {
+        var oldPayload = context.item.Payload();
         var newPayload = {
+            id: oldPayload.id,
+            lft: oldPayload.lft,
+            rgt: oldPayload.rgt,
             text: context.text.value
         };
 
-        if (/^\d+$/.test(context.url.value)) {
-            newPayload.page_id = context.url.value;
-        } else {
-            newPayload.url = context.url.value || null;
-        }
-
         context.item.Payload(newPayload);
-        if (added.indexOf(context.item) < 0 && updated.indexOf(context.item)) {
-            updated.push(context.item);
-        }
+        setLink(context.item, context.url.value);
+        updatedItem(context.item);
     }
 
-    function bindChildren(children, level) {
-        var wrapper;
-        level++;
-
-        for (var i = 0, max = children.length; i < max; i++) {
-            if (!wrapper) {
-                wrapper = document.createElement('ul');
-            }
-
-            wrapper.appendChild(addNode(children[i], level));
-        }
-
-        return wrapper;
-    }
-
-    function addNode(item, level) {
+    function addNode(item) {
         var view = document.createElement('span'),
             text = document.createElement('input'),
             url = document.createElement('input'),
@@ -157,8 +166,8 @@
             open = document.createElement('button'),
             buttons = document.createElement('div'),
             wrapper = document.createElement('li'),
-            childWrapper,
-            level = level || 0;
+            childWrapper = document.createElement('ul'),
+            children = item.Children();
 
         // Set up the elements inside each item
         view.textContent = item.Payload().text;
@@ -170,10 +179,10 @@
         url.value = item.Payload().url || item.Payload().page_id;
         url.classList.add('url');
 
-        add.textContent = '+';
-        remove.textContent = '-';
-        save.textContent = 'save';
-        cancel.textContent = 'cancel';
+        add.textContent = 'Add';
+        remove.textContent = 'Delete';
+        save.textContent = 'Save';
+        cancel.textContent = 'Cancel';
 
         inputs.classList.add('inputs');
         inputs.appendChild(text);
@@ -185,22 +194,22 @@
         buttons.appendChild(cancel);
         buttons.appendChild(save);
 
-        // Set up the item and add elements
-        if (level > 1) {
-            wrapper.setAttribute('draggable', 'true');
-        }
-        wrapper.classList.add('item', 'level' + level);
+        wrapper.setAttribute('draggable', 'true');
+        wrapper.classList.add('item');
         wrapper.appendChild(view);
         wrapper.appendChild(inputs);
         wrapper.appendChild(buttons);
 
         // Go get the children
-        childWrapper = bindChildren(item.Children(), level);
-        if (childWrapper) {
+        for (var i = 0, max = children.length; i < max; i++) {
+            childWrapper.appendChild(addNode(children[i]));
+        }
+        wrapper.appendChild(childWrapper);
+        open.classList.add('open');
+
+        if (children.length) {
             url.setAttribute('disabled', 'disabled');
-            open.classList.add('open');
-            wrapper.appendChild(open);
-            wrapper.appendChild(childWrapper);
+            wrapper.insertBefore(open, view);
         }
 
         // Add event listeners
@@ -208,7 +217,10 @@
             addItem({
                 item: item,
                 wrapper: wrapper,
-                childWrapper: childWrapper
+                childWrapper: childWrapper,
+                urlBox: url,
+                openButton: open,
+                view: view
             });
         }, false);
         remove.addEventListener('click', function() {
@@ -233,7 +245,7 @@
             wrapper.classList.remove('edit');
         }, false);
         open.addEventListener('click', function() {
-            wrapper.classList.toggle('childrenVisible')
+            wrapper.classList.toggle('childrenVisible');
         }, false);
         wrapper.addEventListener('dblclick', function(e) {
             e.stopPropagation();
@@ -270,7 +282,7 @@
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('text/html', this.innerHTML);
         }, false);
-        wrapper.addEventListener('dragend', function(e) {
+        wrapper.addEventListener('dragend', function() {
             var targets = document.querySelectorAll('.target');
             [].forEach.call(targets, function(target) {
                 if (!target.classList.contains('over')) {
@@ -315,14 +327,40 @@
         menuBox.appendChild(buildUI());
     }
 
-    function generate() {
+    function generateInserts() {
         var index = document.getElementById('index').value,
-            results = document.getElementById('insert'),
             inserts;
 
         tree.Decorate('LftRgt', {index: index});
         inserts = tree.ExportInserts();
-        results.textContent = inserts.Statement();
+        return inserts.Statement();
+    }
+
+    function generateUpdates(lists) {
+        var index = document.getElementById('index').value,
+            inserts;
+
+        tree.Decorate('LftRgt', {index: index});
+        inserts = tree.ExportUpdates(lists);
+        return inserts.Statement();
+    }
+
+    function generate() {
+        var statements;
+        var useUpdate = document.getElementById('useUpdate');
+        var results = document.getElementById('insert');
+
+        if (useUpdate.checked) {
+            statements = generateUpdates({
+                updates: updated,
+                inserts: added,
+                deletes: deleted
+            });
+        } else {
+            statements = generateInserts();
+        }
+
+        results.textContent = statements;
     }
 
     function selectText(el) {

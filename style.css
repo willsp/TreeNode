@@ -74,7 +74,6 @@ button {
     position: absolute;
     right: 0;
     top: 0;
-    bottom: 0;
     overflow: auto;
     text-align: left;
 }
@@ -143,12 +142,16 @@ li li ul {
     display: block;
 }
 
+button.open {
+    margin-right: 3px;
+}
+
 .open:before {
-    content: "show";
+    content: "+";
 }
 
 .childrenVisible > .open:before {
-    content: "hide";
+    content: "-";
 }
 
 .draggingCont li {
@@ -159,7 +162,7 @@ li li ul {
     padding: 0 .5em;
 }
 
-li.dragging {
+.dragging {
     opacity: 0.4;
     margin: 0.5em 0;
 }
