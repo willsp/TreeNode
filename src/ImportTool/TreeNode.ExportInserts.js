@@ -44,15 +44,15 @@
             rowPostfix = ')';
 
         context.rows.push(rowPrefix + [
-            '\'' + tree.Payload().text + '\'',
+            '\'' + tree.data.text + '\'',
             tree.Lft,
             tree.Rgt,
-            tree.Payload().page_id || 'NULL',
-            tree.Payload().url || 'NULL'
+            tree.data.page_id || 'NULL',
+            tree.data.url || 'NULL'
         ].join(',') + rowPostfix);
 
-        for (var i = 0, max = tree.Children().length; i < max; i++) {
-            writeRows(context, tree.Children(i));
+        for (var i = 0, max = tree.children.length; i < max; i++) {
+            writeRows(context, tree.children[i]);
         }
     }
 

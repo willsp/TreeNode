@@ -2,12 +2,12 @@
     "use strict";
 
     function addNode(record, nodes) {
-        nodes[record[1]] = nodes[record[0]].Add({
+        nodes[record[1]] = nodes[record[0]].add(new TreeNode({
             parent: record[0],
             id: record[1],
             text: record[2],
             page_id: (record[3]) ? record[1] : null
-        });
+        }));
     }
 
     TreeNode.ImportFromSelfRef = function(records) {
@@ -21,7 +21,7 @@
             records = records.split('\n');
             root = records[0].split('\t');
 
-            tree = TreeNode.CreateRoot({
+            tree = new TreeNode({
                 parent: root[0],
                 id: root[1],
                 text: root[2],

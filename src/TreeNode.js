@@ -1,101 +1,49 @@
-(function (global) {
-    "use strict";
+(function(global) {
+    'use strict';
 
-    // To use this, first create a tree root with:
-    // var root = TreeNode.CreateRoot(Payload);
-    function TreeNode(options) {
-        if (!(this instanceof TreeNode)) {
-            return new TreeNode(options);
-        }
-
-        if (options && options.payload) {
-            this._children = [];
-            this._parent = options.parent;
-            this._payload = options.payload;
-
-            return this;
-        } else {
-            return null;
-        }
+    function TreeNode(data) {
+        this.data = data;
+        this.children = [];
+        this.parent = null;
     }
 
-    TreeNode.prototype.Parent = function() {
-        return this._parent;
-    };
-
-    TreeNode.prototype.Payload = function(payload) {
-        if (payload) {
-            this._payload = payload;
+    TreeNode.prototype.add = function(child) {
+        if (child.constructor.name !== 'TreeNode') {
+            throw 'Child must be a TreeNode object';
         }
 
-        return this._payload;
-    };
-
-    TreeNode.prototype.Children = function(index) {
-        if (index || index === 0) {
-            return this._children[index];
-        } else {
-            return this._children;
-        }
-    };
-
-    TreeNode.prototype.Add = function(payload, index) {
-        var child;
-
-        if (!payload) {
-            return;
-        }
-
-        if (payload.constructor.name !== this.constructor.name) {
-            child = new TreeNode({
-                parent: this,
-                payload: payload
-            });
-        } else {
-            child = payload;
-            child._parent = this; // This kind of breaks my rules...
-        }
-
-        if (index > -1 && index < this._children.length) {
-            this._children.splice(index, 0, child);
-        } else if (index === undefined || index === this._children.length) {
-            this._children.push(child);
-        }
-
+        this.children.push(child);
+        child.parent = this;
         return child;
     };
 
-    TreeNode.prototype.InsertBefore = function(payload, reference) {
-        var refIndex = this._children.indexOf(reference);
-
-        if (refIndex > -1) {
-            return this.Add(payload, refIndex);
+    TreeNode.prototype.remove = function(child) {
+        var i = this.children.indexOf(child);
+        if (i > -1) {
+            return this.children.splice(i, 1)[0];
         }
     };
 
+    TreeNode.prototype.insertBefore = function(child, ref) {
+        var refIndex = this.children.indexOf(ref);
 
-    TreeNode.prototype.Remove = function(target) {
-        var removed,
-            targetIndex = this.Children().indexOf(target);
-
-        if (targetIndex > -1) {
-            removed = this.Children().splice(targetIndex, 1);
-        }
-
-        return (removed && removed[0]) ? removed[0] : undefined;
+        return this.addAt(child, refIndex);
     };
 
-    // Factory...
-    TreeNode.CreateRoot = function (Payload) {
-        var tree =  new TreeNode({
-            payload: Payload,
-            parent: null
-        });
+    TreeNode.prototype.addAt = function(child, index) {
+        if (index > -1 && index < this.children.length) {
+            this.children.splice(index, 0, child);
+            child.parent = this;
+            return child;
+        } else if (index === this.children.length) {
+            return this.add(child);
+        }
+    };
 
-        return tree;
+    TreeNode.prototype.getParent = function() {
+        return this.parent;
     };
 
     global.TreeNode = TreeNode;
-
-}(this));
+}(window));
 

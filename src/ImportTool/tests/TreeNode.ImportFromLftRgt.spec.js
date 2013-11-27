@@ -1,6 +1,6 @@
 /*global TreeNode, describe, it, expect*/
 
-describe("Import From LftRgt Table", function() {
+xdescribe("Import From LftRgt Table", function() {
     "use strict";
     var getRecord,
         test = "1	Root	0	13	NULL\n" +

@@ -6,25 +6,20 @@
             return new TreeNode.LftRgt(options);
         }
 
-        var context,
-            currIndex;
+        var currIndex;
 
         if (!(options && options.context && options.context instanceof TreeNode)) {
             return null;
         }
 
-        this.Context = function() {
-            return context;
-        };
-
         this.CurrentIndex = function() {
             return currIndex++;
         };
 
-        context = options.context;
+        this.context = options.context;
         currIndex = (options.index || options.index === 0) ? options.index : 1;
         
-        decorateChild(this.Context(), this);
+        decorateChild(this.context, this);
 
         return this;
     };
@@ -32,8 +27,8 @@
     function decorateChild(treeNode, context) {
         treeNode.Lft = context.CurrentIndex();
 
-        for (var i = 0, max = treeNode.Children().length; i < max; i++) {
-            decorateChild(treeNode.Children(i), context);
+        for (var i = 0, max = treeNode.children.length; i < max; i++) {
+            decorateChild(treeNode.children[i], context);
         }
 
         treeNode.Rgt = context.CurrentIndex();

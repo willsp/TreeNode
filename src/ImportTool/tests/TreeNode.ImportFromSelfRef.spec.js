@@ -18,14 +18,14 @@ describe("Import From Self Reference Table", function() {
         test = test.split('\n');
 
         expect(tree).toBeDefined();
-        expect(tree.Payload().text).toBe(test[0].split('\t')[2]);
-        expect(tree.Payload().page_id).toBeNull();
-        expect(tree.Children(0).Payload().text).toBe(test[1].split('\t')[2]);
-        expect(tree.Children(0).Payload().page_id).toBe(test[1].split('\t')[1]);
-        expect(tree.Children(1).Payload().text).toBe(test[2].split('\t')[2]);
-        expect(tree.Children(1).Payload().page_id).toBeNull();
-        expect(tree.Children(1).Children(0).Payload().text).toBe(test[3].split('\t')[2]);
-        expect(tree.Children(1).Children(0).Payload().page_id).toBe(test[3].split('\t')[1]);
+        expect(tree.data.text).toBe(test[0].split('\t')[2]);
+        expect(tree.data.page_id).toBeNull();
+        expect(tree.children[0].data.text).toBe(test[1].split('\t')[2]);
+        expect(tree.children[0].data.page_id).toBe(test[1].split('\t')[1]);
+        expect(tree.children[1].data.text).toBe(test[2].split('\t')[2]);
+        expect(tree.children[1].data.page_id).toBeNull();
+        expect(tree.children[1].children[0].data.text).toBe(test[3].split('\t')[2]);
+        expect(tree.children[1].children[0].data.page_id).toBe(test[3].split('\t')[1]);
     });
 
     it("Won't fail when a child comes before a parent", function() {
@@ -34,14 +34,14 @@ describe("Import From Self Reference Table", function() {
         test2 = test2.split('\n');
 
         expect(tree).toBeDefined();
-        expect(tree.Payload().text).toBe(test2[0].split('\t')[2]);
-        expect(tree.Payload().page_id).toBeNull();
-        expect(tree.Children(0).Payload().text).toBe(test2[1].split('\t')[2]);
-        expect(tree.Children(0).Payload().page_id).toBe(test2[1].split('\t')[1]);
-        expect(tree.Children(1).Payload().text).toBe(test2[3].split('\t')[2]);
-        expect(tree.Children(1).Payload().page_id).toBeNull();
-        expect(tree.Children(1).Children(0).Payload().text).toBe(test2[2].split('\t')[2]);
-        expect(tree.Children(1).Children(0).Payload().page_id).toBe(test2[2].split('\t')[1]);
+        expect(tree.data.text).toBe(test2[0].split('\t')[2]);
+        expect(tree.data.page_id).toBeNull();
+        expect(tree.children[0].data.text).toBe(test2[1].split('\t')[2]);
+        expect(tree.children[0].data.page_id).toBe(test2[1].split('\t')[1]);
+        expect(tree.children[1].data.text).toBe(test2[3].split('\t')[2]);
+        expect(tree.children[1].data.page_id).toBeNull();
+        expect(tree.children[1].children[0].data.text).toBe(test2[2].split('\t')[2]);
+        expect(tree.children[1].children[0].data.page_id).toBe(test2[2].split('\t')[1]);
     });
 });
 

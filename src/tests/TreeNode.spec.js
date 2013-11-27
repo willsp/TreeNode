@@ -1,120 +1,93 @@
-/*global TreeNode, describe, it, expect*/
+/*global TreeNode, describe, it, xit, expect*/
 
-describe("TreeNode suite basics", function() {
-    "use strict";
+/*
+ * @venus-library jasmine
+ * @venus-include src/main/webapp/wsm/js/menuDemo/TreeNode.js
+ */
 
-    it("Can create root node", function() {
-        var obj = {text: 'Root'},
-            node = TreeNode.CreateRoot(obj);
+describe('TreeNode class', function() {
+    'use strict';
 
-        expect(node).not.toBe(null);
-        expect(node.Payload()).toBe(obj);
+    it('returns a TreeNode object', function() {
+        var tn = new TreeNode();
+
+        expect(tn.constructor.name).toBe('TreeNode');
     });
 
-    it("Can add child node", function() {
-        var obj = {text: 'Root'},
-            node = TreeNode.CreateRoot(obj),
-            childObj = {text: "Child"},
-            childNode = node.Add(childObj);
+    it('sets the data to the object that is passed in', function() {
+        var data = {
+            name: 'root1'
+        };
+        var tn = new TreeNode(data);
 
-        expect(node.Children(0)).toBe(childNode);
+        expect(tn.data).toBe(data);
     });
 
-    it("Can insert a node before a child", function() {
-        var obj = {text: 'Root'},
-            node = TreeNode.CreateRoot(obj),
-            childObj = {text: "Child"},
-            childNode = node.Add(childObj);
+    it('has 0 children by default', function() {
+        var tn = new TreeNode();
 
-        var newChild = {text: "new child"},
-            newChildNode = node.InsertBefore(newChild, childNode);
-
-        expect(node.Children(0)).toBe(newChildNode);
-        expect(node.Children(1)).toBe(childNode);
+        expect(tn.children.length).toBe(0);
     });
 
-    it("Can insert a node as the last node using length", function() {
-        var obj = {text: 'Root'},
-            node = TreeNode.CreateRoot(obj),
-            childObj = {text: "Child"},
-            childNode = node.Add(childObj);
+    it('allows you to add children which will also be TreeNodes', function() {
+        var tn = new TreeNode();
+        var child = tn.add(new TreeNode({name: 'child1'}));
 
-        var newChild = {text: "new child"},
-            newChildNode = node.Add(newChild, 1);
-
-        expect(node.Children(0)).toBe(childNode);
-        expect(node.Children(1)).toBe(newChildNode);
+        
+        expect(tn.children.length).toBe(1);
+        expect(tn.children[0]).toBe(child);
     });
 
-    it("Can insert a node that is TreeNode before a child", function() {
-        var obj = {text: 'Root'},
-            node = TreeNode.CreateRoot(obj),
-            childObj = {text: "Child"},
-            childNode = node.Add(childObj);
+    it('does NOT allow you to add objects which are not tree nodes to the children', function() {
+        var tn = new TreeNode();
+        var addChild = function() {
+            tn.add({});
+        };
 
-        var removed = node.Remove(childNode),
-            obj2 = {text: 'Root2'},
-            tree2 = TreeNode.CreateRoot(obj2),
-            child2Obj = {text: "Child2"},
-            child2Node = tree2.Add(child2Obj),
-            childNode2 = tree2.Add(removed, 0);
-
-        expect(tree2.Children(0)).toBe(childNode);
-        expect(tree2.Children(1)).toBe(child2Node);
+        expect(addChild).toThrow();
     });
 
-    it("Can add a child node that is already a TreeNode", function() {
-        var obj = {text: 'Root'},
-            node = TreeNode.CreateRoot(obj),
-            childObj = {text: "Child"},
-            childNode = node.Add(childObj);
+    xit('does not allow you to add objects directly to the array returned by children', function() {
+        var tn = new TreeNode();
+        var child = tn.add(new TreeNode());
+        var children = tn.children;
 
-        expect(node.Children(0)).toBe(childNode);
+        children.push({});
+        children[0] = "Something else";
 
-        var removed = node.Remove(childNode),
-            obj2 = {text: 'Root2'},
-            tree2 = TreeNode.CreateRoot(obj2),
-            childNode2 = tree2.Add(removed);
-
-        expect(tree2.Children(0)).toBe(childNode2);
-        expect(removed).toBe(childNode);
-        expect(childNode2).toBe(childNode);
+        expect(tn.children.length).toBe(1);
+        expect(tn.children[0]).toBe(child);
     });
 
-    it("Can return the length of children", function() {
-        var obj = {text: 'Root'},
-            node = TreeNode.CreateRoot(obj),
-            childObj = {text: "Child"},
-            childNode = node.Add(childObj),
-            child2Obj = {text: "Child2"},
-            child2Node = node.Add(child2Obj);
+    it('allows removal of children', function() {
+        var tn = new TreeNode();
+        var child = tn.add(new TreeNode());
 
-        expect(node.Children().length).toBe(2);
-        expect(node.Children(0)).toBe(childNode);
-        expect(node.Children(1)).toBe(child2Node);
+        expect(tn.children.length).toBe(1);
+
+        var removed = tn.remove(child);
+
+        expect(tn.children.length).toBe(0);
+        expect(removed).toBe(child);
     });
 
-    it("Can remove a child node", function() {
-        var obj = {text: 'Root'},
-            node = TreeNode.CreateRoot(obj),
-            childObj = {text: "Child"},
-            childNode = node.Add(childObj);
+    it('allows insertion into children', function() {
+        var tn = new TreeNode();
+        var child = tn.add(new TreeNode());
 
-        var removed = node.Remove(childNode);
-        expect(node.Children().length).toBe(0);
-        expect(removed).toBe(childNode);
+        expect(tn.children[0]).toBe(child);
+        
+        var child1 = tn.insertBefore(new TreeNode(), child);
+
+        expect(tn.children[0]).toBe(child1);
+        expect(tn.children[1]).toBe(child);
     });
 
-    it("Returns undefined if Remove is unsuccessful", function() {
-        var obj = {text: 'Root'},
-            node = TreeNode.CreateRoot(obj),
-            childObj = {text: "Child"},
-            childNode = node.Add(childObj);
+    it('has a reference to the parent object or null', function() {
+        var tn = new TreeNode();
+        var child = tn.add(new TreeNode());
 
-        var removed = node.Remove(childObj);
-        expect(node.Children().length).toBe(1);
-        expect(node.Children(0)).toBe(childNode);
-        expect(removed).toBeUndefined();
+        expect(child.getParent()).toBe(tn);
+        expect(tn.getParent()).toBeNull();
     });
 });
-
