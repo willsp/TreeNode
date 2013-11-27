@@ -47,7 +47,7 @@
     };
 
     function buildUpdates(context, updates, inserts) {
-        var pl = context.Payload();
+        var pl = context.data;
         var positionChanged;
         var statement = '';
         var updateIndex = updates.indexOf(context);
@@ -71,8 +71,8 @@
                 statement += '\nWHERE id = ' + pl.id + ';\n';
             }
         }
-        for (var i = 0, max = context.Children().length; i < max; i++) {
-            statement += buildUpdates(context.Children()[i], updates, inserts);
+        for (var i = 0, max = context.children.length; i < max; i++) {
+            statement += buildUpdates(context.children[i], updates, inserts);
         }
 
         return statement;
@@ -90,8 +90,8 @@
                     '\'' + inserts[i].Payload().text + '\'',
                     inserts[i].Lft,
                     inserts[i].Rgt,
-                    inserts[i].Payload().page_id || 'NULL',
-                    (inserts[i].Payload().url) ? '\'' + inserts[i].Payload().url + '\'' : 'NULL'
+                    inserts[i].data.page_id || 'NULL',
+                    (inserts[i].data.url) ? '\'' + inserts[i].data.url + '\'' : 'NULL'
                 ].join(',') + ')';
             }
             
@@ -108,7 +108,7 @@
             
             for (var i = 0, max = deletes.length; i < max; i++) {
                 statement += 'DELETE FROM `nav`\n';
-                statement += 'WHERE `id` = ' + deletes[i].Payload().id + ';\n';
+                statement += 'WHERE `id` = ' + deletes[i].data.id + ';\n';
             }
         }
 

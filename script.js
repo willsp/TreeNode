@@ -39,7 +39,7 @@
             var children = parent.childNodes;
             var targets = document.querySelectorAll('.target');
             var itemParent = draggedItem.Parent();
-            var item = itemParent.Remove(draggedItem);
+            var item = itemParent.remove(draggedItem);
             var newIndex;
 
             this.parentNode.insertBefore(dragging, this);
@@ -57,7 +57,7 @@
                 }
             }
 
-            itemParent.Add(item, newIndex);
+            itemParent.addAt(item, newIndex);
 
             return false;
         }, false);
@@ -72,19 +72,19 @@
 
     function setLink(item, link) {
         if (/^\d+$/.test(link)) {
-            item.Payload().page_id = link;
+            item.data.page_id = link;
         } else {
-            item.Payload().url = link || null;
+            item.data.url = link || null;
         }
     }
 
     function addItem(context) {
-        var hasChildren = context.item.Children().length > 0;
-        var newItem = context.item.Add({
+        var hasChildren = context.item.children.length > 0;
+        var newItem = context.item.addAt(new TreeNode({
                 text: null,
                 page_id: null,
                 url: null
-            }, 0);
+            }), 0);
         var childWrapper = context.childWrapper;
         var myNode = addNode(newItem);
 
@@ -92,8 +92,8 @@
 
         if (!hasChildren) {
             context.wrapper.insertBefore(context.openButton, context.view);
-            context.item.Payload().url = null;
-            context.item.Payload().page_id = null;
+            context.item.data.url = null;
+            context.item.data.page_id = null;
             context.urlBox.disabled = true;
             updatedItem(context.item);
         }
@@ -111,11 +111,11 @@
         var parent = context.item.Parent();
         var parentCont = context.wrapper.parentNode;
         var parentUI = parentCont.parentNode;
-        var itemname = (context.item.Payload()) ? context.item.Payload().text : "null";
+        var itemname = (context.item.data) ? context.item.data.text : "null";
         var addedIndex = added.indexOf(context.item);
         var updatedIndex = updated.indexOf(context.item);
 
-        if (context.item.Children().length === 0 && confirm("Deleting " + itemname + ". Are you sure?")) {
+        if (context.item.children.length === 0 && confirm("Deleting " + itemname + ". Are you sure?")) {
             if (addedIndex > -1) {
                 added.splice(addedIndex, 1);
             } else {
@@ -126,7 +126,7 @@
                 deleted.push(context.item);
             }
             
-            parent.Remove(context.item);
+            parent.remove(context.item);
 
             parentCont.removeChild(context.wrapper);
 
@@ -141,7 +141,7 @@
     }
 
     function saveItem(context) {
-        var oldPayload = context.item.Payload();
+        var oldPayload = context.item.data;
         var newPayload = {
             id: oldPayload.id,
             lft: oldPayload.lft,
@@ -167,16 +167,16 @@
             buttons = document.createElement('div'),
             wrapper = document.createElement('li'),
             childWrapper = document.createElement('ul'),
-            children = item.Children();
+            children = item.children;
 
         // Set up the elements inside each item
-        view.textContent = item.Payload().text;
+        view.textContent = item.data.text;
         view.classList.add('view');
 
-        text.value = item.Payload().text;
+        text.value = item.data.text;
         text.classList.add('text');
 
-        url.value = item.Payload().url || item.Payload().page_id;
+        url.value = item.data.url || item.data.page_id;
         url.classList.add('url');
 
         add.textContent = 'Add';
@@ -240,8 +240,8 @@
             wrapper.classList.remove('edit');
         }, false);
         cancel.addEventListener('click', function() {
-            text.value = item.Payload().text;
-            url.value = item.Payload().url || item.Payload().page_id;
+            text.value = item.data.text;
+            url.value = item.data.url || item.data.page_id;
             wrapper.classList.remove('edit');
         }, false);
         open.addEventListener('click', function() {
