@@ -37,6 +37,7 @@ module.exports = function(grunt) {
                 'src/Decorator/TreeNode.LftRgt.js',
                 'src/ImportTool/TreeNode.ImportFromSelfRef.js',
                 "src/ImportTool/TreeNode.ImportFromLftRgt.js",
+                "src/ImportTool/TreeNode.ImportFromJSON.js",
                 'src/ImportTool/TreeNode.ExportInserts.js'
             ],
             options: {
