@@ -13,9 +13,7 @@ module.exports = function(grunt) {
                 files: {
                     'build/<%= pkg.name %>.min.js': ['src/TreeNode.js'],
                     'build/<%= pkg.name %>.ImportTool.min.js': [
-                        'src/ImportTool/TreeNode.ImportFromSelfRef.js',
-                        "src/ImportTool/TreeNode.ImportFromLftRgt.js",
-                        'src/ImportTool/TreeNode.ExportInserts.js'
+                        'src/ImportTool/*.js'
                     ],
                     'build/<%= pkg.name %>.Decorator.min.js': [
                         'src/Decorator/TreeNode.Decorate.js',
