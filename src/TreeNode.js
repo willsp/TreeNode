@@ -2,7 +2,7 @@
     'use strict';
 
     function TreeNode(data) {
-        this.data = data;
+        this.data = data || {};
         this.children = [];
         this.parent = null;
     }

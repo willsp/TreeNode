@@ -1,6 +1,6 @@
-/*global TreeNode, describe, it, expect*/
+/*global TreeNode, describe, it, expect, beforeEach*/
 
-xdescribe("Import From LftRgt Table", function() {
+describe("Import From LftRgt Table", function() {
     "use strict";
     var getRecord,
         test = "1	Root	0	13	NULL\n" +
@@ -39,27 +39,27 @@ xdescribe("Import From LftRgt Table", function() {
 
     it("Can build a tree from LftRgt tables", function() {
         var tree = TreeNode.ImportFromLftRgt(test),
-            child1 = tree.Children(0),
-            child1_1 = child1.Children(0),
-            child1_1_1 = child1_1.Children(0),
-            child1_1_2 = child1_1.Children(1),
-            child2 = tree.Children(1),
-            child2_1 = child2.Children(0);
+            child1 = tree.children[0],
+            child1_1 = child1.children[0],
+            child1_1_1 = child1_1.children[0],
+            child1_1_2 = child1_1.children[1],
+            child2 = tree.children[1],
+            child2_1 = child2.children[0];
 
         test = test.split('\n');
 
         expect(tree).toBeDefined();
-        expect(tree.Payload().text).toBe(getRecord(0, 'text'));
-        expect(tree.Payload().page_id).toBeNull();
-        expect(child1.Payload().text).toBe(getRecord(1, 'text'));
-        expect(child1.Payload().page_id).toBeNull();
-        expect(child1_1.Payload().text).toBe(getRecord(2, 'text'));
-        expect(child1_1.Payload().page_id).toBeNull();
-        expect(child1_1_1.Payload().text).toBe(getRecord(3, 'text'));
-        expect(child1_1_1.Payload().page_id).toBe(getRecord(3, 'page_id'));
-        expect(child1_1_2.Payload().text).toBe(getRecord(4, 'text'));
-        expect(child1_1_2.Payload().page_id).toBe(getRecord(4, 'page_id'));
-        expect(child2_1.Payload().text).toBe(getRecord(6, 'text'));
-        expect(child2_1.Payload().page_id).toBe(getRecord(6, 'page_id'));
+        expect(tree.data.text).toBe(getRecord(0, 'text'));
+        expect(tree.data.page_id).toBeNull();
+        expect(child1.data.text).toBe(getRecord(1, 'text'));
+        expect(child1.data.page_id).toBeNull();
+        expect(child1_1.data.text).toBe(getRecord(2, 'text'));
+        expect(child1_1.data.page_id).toBeNull();
+        expect(child1_1_1.data.text).toBe(getRecord(3, 'text'));
+        expect(child1_1_1.data.page_id).toBe(getRecord(3, 'page_id'));
+        expect(child1_1_2.data.text).toBe(getRecord(4, 'text'));
+        expect(child1_1_2.data.page_id).toBe(getRecord(4, 'page_id'));
+        expect(child2_1.data.text).toBe(getRecord(6, 'text'));
+        expect(child2_1.data.page_id).toBe(getRecord(6, 'page_id'));
     });
 });

@@ -24,13 +24,13 @@
                 if (tree) {
                     // TODO: This works great, as long as the records are in order... arg
                     // if record.lft > parent.rgt we got the wrong parent.
-                    while (record[2] > parseInt(tree.Payload().rgt, 10)) {
-                        tree = tree.Parent();
+                    while (record[2] > parseInt(tree.data.rgt, 10)) {
+                        tree = tree.parent;
                     }
 
-                    tree = tree.Add(payload);
+                    tree = tree.add(new TreeNode(payload));
                 } else {
-                    tree = TreeNode.CreateRoot(payload);
+                    tree = new TreeNode(payload);
                     root = tree;
                 }
             }

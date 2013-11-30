@@ -7,6 +7,7 @@
         "src/ImportTool/TreeNode.ImportFromSelfRef.js",
         "src/ImportTool/TreeNode.ExportInserts.js",
         "src/ImportTool/TreeNode.ImportFromLftRgt.js",
+        "src/ImportTool/TreeNode.ImportFromJSON.js",
         "src/**/*.spec.js"
     ]
 }
