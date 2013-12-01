@@ -5,40 +5,42 @@
         if (init) {
             var tree = new TreeNode();
             var data = init.data;
-            var i, max;
+            var i, max, newInit, newProp;
 
             var childKey = init.childKey || 'children';
-            var textKey = init.textKey || 'text';
-            var urlKey = init.urlKey || 'url';
             
-            tree.data = tree.data || {};
+            tree.data  = {};
+            tree.data.store = {};
 
             for (var prop in data) {
                 if (data.hasOwnProperty(prop)) {
-                    switch (prop) {
-                        case childKey:
-                            for (i = 0, max = data[prop].length; i < max; i++) {
-                                tree.add(TreeNode.ImportFromJSON({
-                                    data: data[prop][i],
-                                    childKey: childKey,
-                                    textKey: textKey,
-                                    urlKey: urlKey
-                                }));
+                    if (prop !== childKey) {
+                        tree.data.store[prop] = data[prop];
+                        TreeNode.ImportFromJSON.custom(tree, init, prop);
+                    } else {
+                        for (i = 0, max = data[prop].length; i < max; i++) {
+                            // clone init except for data
+                            newInit = {};
+                            newInit.prototype = init.prototype;
+                            newInit.data = data[prop][i];
+                            for (newProp in init) {
+                                if (init.hasOwnProperty(newProp) &&
+                                    newProp !== 'data') {
+                                    newInit[newProp] = init[newProp];
+                                }
                             }
-                            break;
-                        case textKey:
-                            tree.data.text = data[prop];
-                            break;
-                        case urlKey:
-                            tree.data.url = data[prop];
-                            break;
-                        default:
-                            tree.data[prop] = data[prop];
+
+                            tree.add(TreeNode.ImportFromJSON(newInit));
+                        }
                     }
                 }
             }
 
             return tree;
         }
+    };
+
+    TreeNode.ImportFromJSON.custom = function(tree, init, property) {
+        // Override this to process properties in a custom fashion
     };
 }(window.TreeNode));

@@ -2,16 +2,12 @@
     'use strict';
 
     function TreeNode(data) {
-        this.data = data || {};
+        this.data = data;
         this.children = [];
         this.parent = null;
     }
 
     TreeNode.prototype.add = function(child) {
-        if (child.constructor.name !== 'TreeNode') {
-            throw 'Child must be a TreeNode object';
-        }
-
         this.children.push(child);
         child.parent = this;
         return child;

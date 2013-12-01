@@ -38,7 +38,7 @@ describe('TreeNode class', function() {
         expect(tn.children[0]).toBe(child);
     });
 
-    it('does NOT allow you to add objects which are not tree nodes to the children', function() {
+    xit('does NOT allow you to add objects which are not tree nodes to the children', function() {
         var tn = new TreeNode();
         var addChild = function() {
             tn.add({});
